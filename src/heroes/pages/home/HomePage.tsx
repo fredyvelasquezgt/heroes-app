@@ -1,18 +1,36 @@
-
+import { useState } from 'react';
+import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { CustomJumbotron } from "@/components/custom/CustomJumbotron"
 import { HeroStats } from "@/heroes/components/HeroStats"
 import { HeroGrid } from "@/heroes/components/HeroGrid"
-import { useState } from 'react';
 import { CustomPagination } from "@/components/custom/CustomPagination"
 import { CustomBreadCrumbs } from "@/components/custom/CustomBreadCrumbs"
+import { getHeroesByPageAction } from '../../actions/get-heroes-by-page.action';
+import { useSearchParams } from 'react-router';
 
 export const HomePage = () => {
+
+
+    const [searchParams, setSearchParams] = useSearchParams()l
+
+
 
 
     const [activeTab, setActiveTab] = useState<
         'all' | 'favorites' | 'heroes' | 'villains'
     >('all')
+
+    const { data: heroesResponse } = useQuery({
+        queryKey: ['heroes'],
+        queryFn: () => getHeroesByPageAction(),
+        staleTime: 1000 * 60 * 5,
+    })
+
+
+    // useEffect(() => {
+    //     getHeroesByPage().then()
+    // }, [])
 
     return (
         <>
@@ -43,21 +61,21 @@ export const HomePage = () => {
                     </TabsList>
 
                     <TabsContent value="all">
-                        <HeroGrid />
+                        <HeroGrid heroes={heroesResponse?.heroes ?? []} />
                     </TabsContent>
                     <TabsContent value="favorites">
                         <h1>Favorites</h1>
-                        <HeroGrid />
+                        <HeroGrid heroes={[]} />
 
                     </TabsContent>
                     <TabsContent value="heroes">
                         <h1>Heroes</h1>
-                        <HeroGrid />
+                        <HeroGrid heroes={[]} />
 
                     </TabsContent>
                     <TabsContent value="villains">
                         <h1>Villains</h1>
-                        <HeroGrid />
+                        <HeroGrid heroes={[]} />
 
                     </TabsContent>
                 </Tabs>
